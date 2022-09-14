@@ -1,0 +1,24 @@
+// from https://community.qlik.com/t5/Knowledge/During-STORE-command-the-File-Save-occasionally-fails/ta-p/1715771
+
+SUB StoreQVD (Table, Path) 
+    Set ErrorMode=0; 
+    Set ScriptErrorCount = 0; 
+    Set RetryCount = 0; 
+    DO WHILE TRUE() 
+        STORE [$(Table)] INTO [$(Path)] (qvd); 
+        IF $(ScriptErrorCount) = 0 THEN 
+            EXIT DO 
+        ELSE 
+            Set ScriptErrorCount = 0; 
+            LET RetryCount=RetryCount+1; 
+        END IF 
+        IF ($(RetryCount) = 10) THEN
+            TRACE 'ERROR: Failed to save [$(Table)] INTO [$(Path)] after 10 tries.'; 
+            SET ErrorMode=2; 
+            Load * from nonexistant.qvd; 
+        END IF 
+        TRACE 'ERROR: Failed to save [$(Table)] INTO [$(Path)]. Try $(RetryCount) of 10.'; 
+        SLEEP 10000; 
+    LOOP 
+    SET ErrorMode=2; 
+END SUB
