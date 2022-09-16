@@ -1,0 +1,5 @@
+Let testvar = chr(8) &chr(9) &chr(10) &chr(12) &chr(13)&'"/\';
+
+set escapejson = replace(replace(replace(replace(replace(replace(replace(replace($1,chr(92),'\\'),chr(47),'\/'),chr(34),'\"'),chr(13),'\r'),chr(12),'\f'),chr(10),'\n'),chr(9),'\t'),chr(8),'\b');
+
+let testvar = $(escapejson(testvar));
